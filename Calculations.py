@@ -12,7 +12,10 @@ def probability_k_errors(errorRate:float|np.ndarray,n:int|np.ndarray,k:int|np.nd
     :param k: Error count
     :return: 0 - 1
     """
-    return binom(n,k) * (errorRate ** k) * ((1 - errorRate) ** (n - k))
+    try:
+        return binom(n,k) * (errorRate ** k) * ((1 - errorRate) ** (n - k))
+    except OverflowError:
+        return errorRate * 0 + n * 0 + k * 0 # When you pass arrays, this will be converted to array
 
 def probability_k_range(
         errorRate:float|np.ndarray,
@@ -71,9 +74,12 @@ def get_table(
     table = list()
     for k, P in probability_k_range(errorRate, n, k_min, k_max, returnKAsTuple=True):
         cum_sum += P
-        #cum_sum = np.max([cum_sum,1])
+
         if isinstance(P,np.ndarray):
             k = np.full_like(P,k)
+            cum_sum = np.clip(cum_sum,0,1)
+        else:
+            cum_sum = min(1,cum_sum)
         try:
             table.append([
                 k,

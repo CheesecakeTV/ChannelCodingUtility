@@ -3,6 +3,15 @@
 
 This utility can help you decide which error correction algorithm you want to implement for your communication system.
 
+I am developing this project for myself, not to make a professional software.
+
+You can post suggestions, questions and critique, but I wont respond to anything regarding my coding style.
+Really don't care weather it's PEP-conform or not.
+
+If you'd like to contribute, don't spread your code in too many files or make it overly complicated.
+I know how professional software structure looks and I hate it.
+
+With that being said, enjoy :)
 
 ## Getting started
 

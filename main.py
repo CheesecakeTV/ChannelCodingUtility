@@ -6,6 +6,7 @@ from functools import partial
 
 # Main layout
 # Start here if you are running as a python script
+sg.set_options(font="Any 14")
 
 def layout_oneLine(text:str,key:str,in_size:int=22,default_text:str|float="",enable_events:bool=False) -> list[sg.Element]:
     """
@@ -81,7 +82,7 @@ def layout_numberButtons(key:str,to_type:type=float,additional_call:"callable"=N
         sg.Button(
             "/ 2",
             key=(
-                lambda w,e,v:w[key](convert(v[key],0,to_type=to_type) / 2),
+                lambda w,e,v:w[key](convert(convert(v[key],0,to_type=to_type) / 2,0,to_type)),
                 additional_call
             )
         ),
@@ -95,21 +96,21 @@ def layout_numberButtons(key:str,to_type:type=float,additional_call:"callable"=N
         sg.Button(
             "/ 10",
             key=(
-                lambda w,e,v:w[key](convert(v[key],0,to_type=to_type) / 10),
+                lambda w,e,v:w[key](convert(convert(v[key],0,to_type=to_type) / 10,0,to_type)),
                 additional_call
             )
         ),
         sg.Button(
             "+ 1",
             key=(
-                lambda w,e,v:w[key](convert(v[key],0,to_type=to_type) + 1),
+                lambda w,e,v:w[key](convert(convert(v[key],0,to_type=to_type) + 1,0,to_type)),
                 additional_call
             )
         ),
         sg.Button(
             "- 1",
             key=(
-                lambda w,e,v:w[key](convert(v[key],0,to_type=to_type) - 1),
+                lambda w,e,v:w[key](convert(convert(v[key],0,to_type=to_type) - 1,0,to_type)),
                 additional_call
             )
         ),
@@ -167,7 +168,7 @@ def main():
         layout_oneLine("Symbol-error probability:","SymbolErrorRate",default_text="1e-7",enable_events=True) +
         layout_numberButtons("SymbolErrorRate",float,refresh_table),
         layout_oneLine("Symbol-count:", "NumSymbols",default_text=1000,enable_events=True) +
-        layout_numberButtons("NumSymbols",float,refresh_table),
+        layout_numberButtons("NumSymbols",int,refresh_table),
         layout_oneLine("Max error Count:","MaxErrorcount",default_text=10,enable_events=True) +
         layout_numberButtons("MaxErrorcount",int,refresh_table),
         [

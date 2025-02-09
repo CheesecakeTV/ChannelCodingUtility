@@ -216,16 +216,16 @@ def main():
             last_changed_ser = False
 
         if e in ["SymbolErrorRate","BitsPerSymbol"] and to_int(v["BitsPerSymbol"],0) and last_changed_ser:
-            w["BitErrorRate"](calc.ber_from_ser(
+            w["BitErrorRate"](calc.round_to_exponential(calc.ber_from_ser(
                 to_float(v["SymbolErrorRate"],0),
                 to_int(v["BitsPerSymbol"],0)
-            ))
+            ),4))
 
         if e in ["BitErrorRate","BitsPerSymbol"] and to_int(v["BitsPerSymbol"],0) and not last_changed_ser:
-            w["SymbolErrorRate"](temp := calc.ser_from_ber(
+            w["SymbolErrorRate"](temp := calc.round_to_exponential(calc.ser_from_ber(
                 to_float(v["BitErrorRate"],0),
                 to_int(v["BitsPerSymbol"],0)
-            ))
+            ),4))
             v["SymbolErrorRate"] = temp
             e = "SymbolErrorRate"
 

@@ -125,6 +125,8 @@ def round_to_exponential(x:float,digits:int = 2) -> float:
     :param digits: How many digits AFTER the first one. 0 means, only keep first digit.
     :return: Rounded float
     """
+    if x == 0:
+        return 0
     exp = int(np.log10(x))
     return np.round(x,-exp + 1 + digits)
 

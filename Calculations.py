@@ -95,6 +95,25 @@ def get_table(
         return np.array(table)
     return table
 
+def ber_from_ser(ser:float|np.ndarray,bit_per_symbol:int = 8) -> float|np.ndarray:
+    """
+    Calculates the bit-error-rate (BER) based on the symbol-error-rate (SER) and the bit-count per symbol.
+    It's easier to measure SER, but sometimes you want to know BER
+    :param ser: Symbol error rate
+    :param bit_per_symbol: How many bits per symbol (Usually 8)
+    :return: Bit error rate
+    """
+    assert bit_per_symbol
+    return 1 - ((1 - ser) ** (1/bit_per_symbol))
 
+def ser_from_ber(ber:float|np.ndarray,bit_per_symbol:int = 8) -> float|np.ndarray:
+    """
+    Calculates the symbol-error-rate (SER) based on the bit-error-rate (BER) and the bit-count per symbol.
+    :param ber: Symbol error rate
+    :param bit_per_symbol: How many bits per symbol (Usually 8)
+    :return: Bit error rate
+    """
+    assert bit_per_symbol
+    return 1 - (1 - ber) ** bit_per_symbol
 
 

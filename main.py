@@ -31,7 +31,6 @@ def layout_oneLine(text:str,key:str,in_size:int=22,default_text:str|float="",ena
         )
     ]
 
-
 def convert(x:any,default:any,to_type:"type|callable") -> any:
     """
     Tries to convert x to to_type.
@@ -70,6 +69,8 @@ def layout_numberButtons(key:str,to_type:type=float,additional_call:"callable"=N
     """
     if not additional_call:
         additional_call = lambda *_:0
+    
+    # Todo: Der aktualisiert nicht korrekt. Vermutlich weil der Wert nicht in v geschrieben wird vorm Aktualisieren :C
 
     return [
         sg.Button(
@@ -161,16 +162,17 @@ def refresh_table(w,_,v):
 
     w["mainTable"](formatted)
 
-
 def main():
 
     layout = [
         layout_oneLine("Symbol-error probability:","SymbolErrorRate",default_text="1e-7",enable_events=True) +
-        layout_numberButtons("SymbolErrorRate",float,refresh_table),
+        layout_oneLine("Bit-error probability:","BitErrorRate",enable_events=True),
+        #layout_numberButtons("SymbolErrorRate",float,refresh_table),
         layout_oneLine("Symbol-count:", "NumSymbols",default_text=1000,enable_events=True) +
-        layout_numberButtons("NumSymbols",int,refresh_table),
-        layout_oneLine("Max error Count:","MaxErrorcount",default_text=10,enable_events=True) +
-        layout_numberButtons("MaxErrorcount",int,refresh_table),
+        layout_oneLine("Bits per symbol:","BitsPerSymbol",default_text=8,enable_events=True),
+        #layout_numberButtons("NumSymbols",int,refresh_table),
+        layout_oneLine("Max error Count:","MaxErrorcount",default_text=10,enable_events=True),
+        #layout_numberButtons("MaxErrorcount",int,refresh_table),
         [
             sg.Table(
                 [],
@@ -189,6 +191,8 @@ def main():
 
     refresh_table(w,e,v)
 
+    last_changed_ser = True # If the SER was entered instead of BER lastly
+
     while True:
         e,v = w.read()
 
@@ -204,6 +208,26 @@ def main():
         if isinstance(e,tuple) and e and callable(e[0]): # You can call multiple functions simultaniously
             for i in e:
                 i(w,e,v)
+
+        if e == "SymbolErrorRate":
+            last_changed_ser = True
+
+        if e == "BitErrorRate":
+            last_changed_ser = False
+
+        if e in ["SymbolErrorRate","BitsPerSymbol"] and to_int(v["BitsPerSymbol"],0) and last_changed_ser:
+            w["BitErrorRate"](calc.ber_from_ser(
+                to_float(v["SymbolErrorRate"],0),
+                to_int(v["BitsPerSymbol"],0)
+            ))
+
+        if e in ["BitErrorRate","BitsPerSymbol"] and to_int(v["BitsPerSymbol"],0) and not last_changed_ser:
+            w["SymbolErrorRate"](temp := calc.ser_from_ber(
+                to_float(v["BitErrorRate"],0),
+                to_int(v["BitsPerSymbol"],0)
+            ))
+            v["SymbolErrorRate"] = temp
+            e = "SymbolErrorRate"
 
         if e in ["SymbolErrorRate","NumSymbols","MaxErrorcount"]:
             refresh_table(w,e,v)

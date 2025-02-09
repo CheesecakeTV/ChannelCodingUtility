@@ -103,7 +103,7 @@ def ber_from_ser(ser:float|np.ndarray,bit_per_symbol:int = 8) -> float|np.ndarra
     :param bit_per_symbol: How many bits per symbol (Usually 8)
     :return: Bit error rate
     """
-    assert bit_per_symbol
+    assert bit_per_symbol, "bit_per_symbol can't be 0"
     return 1 - ((1 - ser) ** (1/bit_per_symbol))
 
 def ser_from_ber(ber:float|np.ndarray,bit_per_symbol:int = 8) -> float|np.ndarray:
@@ -113,7 +113,21 @@ def ser_from_ber(ber:float|np.ndarray,bit_per_symbol:int = 8) -> float|np.ndarra
     :param bit_per_symbol: How many bits per symbol (Usually 8)
     :return: Bit error rate
     """
-    assert bit_per_symbol
+    assert bit_per_symbol, "bit_per_symbol can't be 0"
     return 1 - (1 - ber) ** bit_per_symbol
+
+@np.vectorize
+def round_to_exponential(x:float,digits:int = 2) -> float:
+    """
+    Rounds relative to the first non-zero digit.
+    Perfect to use when formatting to exponentials like e.g. 5.02e-6
+    :param x: Number to be rounded
+    :param digits: How many digits AFTER the first one. 0 means, only keep first digit.
+    :return: Rounded float
+    """
+    exp = int(np.log10(x))
+    return np.round(x,-exp + 1 + digits)
+
+
 
 

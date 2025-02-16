@@ -14,17 +14,19 @@ class Polynomial:
     Polynomial of some grade
     """
 
-    def __init__(self,*vals:GFn|int,mod:Self|int=0):
+    def __init__(self,*vals:GFn|int,map_type:type=None):
         """
         :param vals: Highest grade first
-        :param mod: vals will be modulo-d by this number, if given
+        :param map_type: vals will be mapped to this type if given
         """
         if vals and isinstance(vals[0],(list,tuple)):
             vals = vals[0]
 
+        if map_type is not None:
+            vals = map_list(map_type,vals)
+
         self._vals:list
 
-        self.mod = mod # Must be declared before vals
         self.grade = -1 # -1, if Polynomial is empty (all factors 0)
         self.val_type:type|None = None
         self.vals = list(vals)
@@ -238,6 +240,16 @@ class Polynomial:
         summands = [a * (x_val ** b) for b,a in enumerate(self.vals[::-1])]
         return sum(summands)
 
+    def __pow__(self, power:int, modulo=None):
+        if power == 0:
+            return Polynomial(self.val_type(1))
+
+        sol = self
+
+        for _ in range(power - 1):
+            sol = sol * self
+
+        return sol
 
 x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
 y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
@@ -257,4 +269,8 @@ i1,i2 = divmod(x,y)
 print(i1)
 print(i2)
 
+x = Polynomial(1,2,3,4,5,map_type=GF4)
+print(x ** 2)
+print(x ** 3)
+print(x ** 4)
 

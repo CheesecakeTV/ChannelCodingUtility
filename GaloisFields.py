@@ -1,5 +1,8 @@
 from functools import wraps
 
+class GFn: # Only for typehints
+    pass
+
 def mod_izer(mod_by:int) -> callable:
     """
     Decorator for dividing returns of the decorated function mod mod_by
@@ -59,16 +62,32 @@ def GF_class(mod_by) -> callable:
             # else:
             #     print(name,"not in",parent_class)
 
+        # if include_init:
+        #     @wraps(the_class.__init__)
+        #     def newInit(self,*args,**kwargs):
+        #         super(the_class,self).__init__()#number % mod_by, *args, **kwargs)
+        #     the_class.__init__ = newInit
+        #
         return the_class
 
     return make_GF_class_inner
 
 @GF_class(2)
-class GF2(int):
+class GF1(int, GFn):
     pass
 
-x = GF2(5)
-y = GF2(2)
+@GF_class(16)
+class GF4(int, GFn):
+    pass
+
+@GF_class(256)
+class GF8(int, GFn):
+    pass
+
+x = GF1(5)
+y = GF1(2)
+
+print(x)
 
 print(x * y)
 

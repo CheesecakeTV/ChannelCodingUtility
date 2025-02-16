@@ -140,12 +140,12 @@ class Polynomial:
             cum_sum = cum_sum + i
         return cum_sum
 
-    def __divmod__(self, other):
+    def __divmod__(self, other) -> (Self,Self):
         """More like __floordivmod__"""
         assert other, "Can't divide by an empty polynomial"
 
         if other.grade > self.grade:
-            return other
+            return Polynomial(),other
 
         dividend:Self = self.shortened()
         divisor = other.shortened() # dividend is divided by the divisor
@@ -229,6 +229,15 @@ class Polynomial:
 
         return False # Equality
 
+    def __call__(self, x_val:int) -> int:
+        """
+        Insert a numerical value into the polynomial-function
+        :param x_val: Value to be plottet in
+        :return:
+        """
+        summands = [a * (x_val ** b) for b,a in enumerate(self.vals[::-1])]
+        return sum(summands)
+
 
 x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
 y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
@@ -244,8 +253,8 @@ b = Polynomial(*map_list(GF1, [1, 0]))
 x = Polynomial(1,0,0,0,1)
 y = Polynomial(1,1)
 
-print(x % y)
-
-
+i1,i2 = divmod(x,y)
+print(i1)
+print(i2)
 
 

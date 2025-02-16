@@ -1,17 +1,20 @@
 from collections.abc import Iterable
 from typing import Self
+from functools import total_ordering
+
 
 from GaloisFields import GF1,GF4,GF8,GFn,GF_class
 
 def map_list(to_type:type,the_list:list|Iterable):
     return type(the_list)(map(to_type,the_list))
 
+@total_ordering
 class Polynomial:
     """
     Polynomial of some grade
     """
 
-    def __init__(self,*vals:GFn,mod:Self|int=0):
+    def __init__(self,*vals:GFn|int,mod:Self|int=0):
         """
         :param vals: Highest grade first
         :param mod: vals will be modulo-d by this number, if given
@@ -116,11 +119,14 @@ class Polynomial:
         new_vals = list(map(lambda a:a[0] - a[1], zip(ssself,other)))
         return Polynomial(*new_vals)
 
-    def __mul__(self, other:Self) -> Self:
+    def __mul__(self, other:Self|int) -> Self:
+        if isinstance(other,(float,int,self.val_type)):
+            return Polynomial(*[i * other for i in self.vals])
+
         ssself,other = self._match_grades(self, other)
 
         summands = [
-            other << n for n,v1 in enumerate(ssself.vals[::-1]) if v1
+            (other << n) * v1 for n,v1 in enumerate(ssself.vals[::-1]) if v1
         ]
         # for n,v1 in enumerate(ssself.vals[::-1]): # Same thing, just not list comprehension
         #     if v1:
@@ -134,11 +140,35 @@ class Polynomial:
             cum_sum = cum_sum + i
         return cum_sum
 
+    def __divmod__(self, other):
+        """More like __floordivmod__"""
+        assert other, "Can't divide by an empty polynomial"
+
+        if other.grade > self.grade:
+            return other
+
+        dividend:Self = self.shortened()
+        divisor = other.shortened() # dividend is divided by the divisor
+        quotient = list()
+
+        while dividend.grade >= divisor.grade:
+            eq = self.val_type(dividend.vals[0] / divisor.vals[0])
+            quotient.append(eq)
+
+            temp = (dividend.grade - divisor.grade)
+            temp = (divisor << temp)
+            temp = temp * eq
+
+            dividend = dividend - temp
+            dividend = dividend.shortened()
+
+        return Polynomial(*quotient),dividend
+
     def __floordiv__(self, other:Self) -> Self:
-        ...
+        return divmod(self,other)[0]
 
     def __mod__(self, other:Self) -> Self:
-        ...
+        return divmod(self,other)[1]
 
     def __str__(self):
         val_type = self.val_type
@@ -180,6 +210,25 @@ class Polynomial:
         """
         return tuple(self.shortened().vals) == tuple(other.shortened().vals)
 
+    def __bool__(self):
+        return self.grade != -1
+
+    def __gt__(self, other:Self):
+        if self.grade > other.grade: # Most common cases
+            return True
+
+        if self.grade < other.grade: # Most common cases
+            return False
+
+        for v1,v2 in zip(self.shortened(),other.shortened()):
+            if abs(v1) > abs(v2):
+                return True
+
+            if abs(v1) < abs(v2):
+                return False
+
+        return False # Equality
+
 
 x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
 y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
@@ -192,8 +241,11 @@ b = Polynomial(*map_list(GF1, [1, 0]))
 # print(x)
 # print(y)
 
-for i in {x,y,z,a,b}:
-    print(i)
+x = Polynomial(1,0,0,0,1)
+y = Polynomial(1,1)
+
+print(x % y)
+
 
 
 

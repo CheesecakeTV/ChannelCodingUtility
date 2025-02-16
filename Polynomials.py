@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from typing import Self
-from GaloisFields import GF1,GF4,GF8,GFn
+
+from GaloisFields import GF1,GF4,GF8,GFn,GF_class
 
 def map_list(to_type:type,the_list:list|Iterable):
     return type(the_list)(map(to_type,the_list))
@@ -15,10 +16,13 @@ class Polynomial:
         :param vals: Highest grade first
         :param mod: vals will be modulo-d by this number, if given
         """
+        if vals and isinstance(vals[0],(list,tuple)):
+            vals = vals[0]
+
         self._vals:list
 
         self.mod = mod # Must be declared before vals
-        self.grade = 0
+        self.grade = -1 # -1, if Polynomial is empty (all factors 0)
         self.val_type:type|None = None
         self.vals = list(vals)
 
@@ -34,21 +38,25 @@ class Polynomial:
     def vals(self,new_vals:Iterable|list):
         if not new_vals:
             self._vals = []
-            self.grade = 0
+            self.grade = -1
             return
 
         # if self.mod: # (Done by GF objects)
         #     new_vals = list(map(lambda a:a % self.mod,new_vals))
         self.val_type = type(new_vals[0])
 
+        self._vals = new_vals
+
         start_index = 0
         for n, i in enumerate(new_vals):
             if i:
                 start_index = n
                 break
+        else:
+            self.grade = -1
+            return
 
         self.grade = len(new_vals) - start_index - 1
-        self._vals = new_vals#[start_index:]
 
     def to_grade(self,to_grade:int) -> Self:
         """
@@ -114,7 +122,7 @@ class Polynomial:
         summands = [
             other << n for n,v1 in enumerate(ssself.vals[::-1]) if v1
         ]
-        # for n,v1 in enumerate(ssself.vals[::-1]):
+        # for n,v1 in enumerate(ssself.vals[::-1]): # Same thing, just not list comprehension
         #     if v1:
         #         summands.append(other << n)
 
@@ -123,7 +131,7 @@ class Polynomial:
 
         cum_sum = summands[0]
         for i in summands[1:]:
-            cum_sum += i
+            cum_sum = cum_sum + i
         return cum_sum
 
     def __floordiv__(self, other:Self) -> Self:
@@ -133,7 +141,13 @@ class Polynomial:
         ...
 
     def __str__(self):
-        return f"<Poly of type {self.val_type.__name__}: {self.vals} | Grade {self.grade}>"
+        val_type = self.val_type
+        if val_type is None:
+            val_type = "???"
+        else:
+            val_type = val_type.__name__
+
+        return f"<Poly with element-type {val_type}: {self.vals} | Grade {self.grade}>"
 
     def __lshift__(self, other:int) -> Self:
         """
@@ -145,18 +159,41 @@ class Polynomial:
             self.vals + [self.val_type(0) for _ in range(other)]
         ))
 
-x = Polynomial(*map_list(GF4, [0, 0, 1, 1]))
-y = Polynomial(*map_list(GF4, [1, 0, 1, 0]))
-z = Polynomial(*map_list(GF4, [0, 0, 1, 0]))
+    def shortened(self):
+        """
+        Returns an identical polynomial with shortened vals to match its grade
+        :return:
+        """
+        if self.grade == -1:
+            return Polynomial()
 
-a = Polynomial(*map_list(GF4, [10]))
+        return Polynomial(*self.vals[-self.grade - 1:])
 
-print(x)
-print(y)
+    def __hash__(self) -> hash:
+        return hash(tuple(self.shortened().vals))
 
-print(x * z)
-print(x + a)
-print(x + a + a)
+    def __eq__(self, other:Self) -> bool:
+        """
+        Equality is based on values, not reference
+        :param other:
+        :return:
+        """
+        return tuple(self.shortened().vals) == tuple(other.shortened().vals)
+
+
+x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
+y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
+z = Polynomial(*map_list(GF1, [0, 0, 1, 0]))
+
+a = Polynomial(*map_list(GF1, [0, 1]))
+
+b = Polynomial(*map_list(GF1, [1, 0]))
+
+# print(x)
+# print(y)
+
+for i in {x,y,z,a,b}:
+    print(i)
 
 
 

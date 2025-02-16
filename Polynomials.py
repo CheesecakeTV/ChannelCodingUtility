@@ -154,10 +154,12 @@ class Polynomial:
         quotient = list()
 
         while dividend.grade >= divisor.grade:
-            grade_before = dividend.grade
+            break_after = False
 
             eq = self.val_type(dividend.vals[0] / divisor.vals[0])
             quotient.append(eq)
+            if not eq and dividend.vals[0]:
+                break_after = True
 
             temp = (dividend.grade - divisor.grade)
             temp = (divisor << temp)
@@ -166,7 +168,7 @@ class Polynomial:
             dividend = dividend - temp
             dividend = dividend.shortened()
 
-            if grade_before == dividend.grade:
+            if break_after:
                 # Due to val_type, no division can happen sometime.
                 # E.g.: If val_type == int and dividend[0] / divisor[0] == 0.5, eq = 0.
                 # This results in an endless loop, because dividend -= ... * eq = ... * 0.
@@ -271,7 +273,7 @@ b = Polynomial(*map_list(GF1, [1, 0]))
 # print(y)
 
 x = Polynomial(1,0,0,0,1)
-y = Polynomial(2,1)
+y = Polynomial(1,1)
 
 i1,i2 = divmod(x,y)
 print(i1)

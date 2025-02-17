@@ -137,10 +137,10 @@ class Polynomial:
         if not summands:
             return self.empty_like()
 
-        cum_sum = summands[0]
+        cum_sum:Polynomial = summands[0]
         for i in summands[1:]:
             cum_sum = cum_sum + i
-        return cum_sum
+        return cum_sum.shortened()
 
     def __divmod__(self, other) -> (Self,Self):
         """More like __floordivmod__"""
@@ -250,7 +250,7 @@ class Polynomial:
         summands = [a * (x_val ** b) for b,a in enumerate(self.vals[::-1])]
         return sum(summands)
 
-    def __pow__(self, power:int, modulo=None):
+    def __pow__(self, power:int, modulo=None) -> Self:
         if power == 0:
             return Polynomial(self.val_type(1))
 
@@ -260,6 +260,28 @@ class Polynomial:
             sol = sol * self
 
         return sol
+
+    def __reversed__(self) -> Self:
+        return Polynomial(*(self.shortened().vals[::-1]))
+
+
+def polynomial_from_roots(*roots:int,map_type:type=None) -> Polynomial:
+    """
+    Forms a polynomial from its roots
+    :param roots: Roots of the polynomial
+    :param map_type: If given, maps root-values to this type
+    :return:
+    """
+    if map_type is not None:
+        map_list(map_type,roots)
+
+    poly = Polynomial(1,map_type=map_type)
+    for i in roots:
+        poly = poly * Polynomial(1,-i,map_type=map_type)
+
+    return poly
+
+print(type(not None))
 
 x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
 y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
@@ -276,11 +298,17 @@ x = Polynomial(1,0,0,0,1)
 y = Polynomial(1,1)
 
 i1,i2 = divmod(x,y)
-print(i1)
-print(i2)
+# print(i1)
+# print(i2)
 
 x = Polynomial(1,2,3,4,5,map_type=GF4)
-print(x ** 2)
-print(x ** 3)
-print(x ** 4)
+# print(x ** 2)
+# print(x ** 3)
+# print(x ** 4)
+
+x = Polynomial(1,0,0,1,1,map_type=GF1)
+y = Polynomial(1,1,1,1,1,map_type=GF1)
+print(x * y)
+print(reversed(x * y))
+
 

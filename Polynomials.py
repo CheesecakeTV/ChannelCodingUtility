@@ -281,34 +281,34 @@ def polynomial_from_roots(*roots:int,map_type:type=None) -> Polynomial:
 
     return poly
 
-print(type(not None))
-
-x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
-y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
-z = Polynomial(*map_list(GF1, [0, 0, 1, 0]))
-
-a = Polynomial(*map_list(GF1, [0, 1]))
-
-b = Polynomial(*map_list(GF1, [1, 0]))
-
-# print(x)
-# print(y)
-
-x = Polynomial(1,0,0,0,1)
-y = Polynomial(1,1)
-
-i1,i2 = divmod(x,y)
-# print(i1)
-# print(i2)
-
-x = Polynomial(1,2,3,4,5,map_type=GF4)
-# print(x ** 2)
-# print(x ** 3)
-# print(x ** 4)
-
-x = Polynomial(1,0,0,1,1,map_type=GF1)
-y = Polynomial(1,1,1,1,1,map_type=GF1)
-print(x * y)
-print(reversed(x * y))
+# print(type(not None))
+#
+# x = Polynomial(*map_list(GF1, [0, 0, 1, 1]))
+# y = Polynomial(*map_list(GF1, [1, 0, 1, 0]))
+# z = Polynomial(*map_list(GF1, [0, 0, 1, 0]))
+#
+# a = Polynomial(*map_list(GF1, [0, 1]))
+#
+# b = Polynomial(*map_list(GF1, [1, 0]))
+#
+# # print(x)
+# # print(y)
+#
+# x = Polynomial(1,0,0,0,1)
+# y = Polynomial(1,1)
+#
+# i1,i2 = divmod(x,y)
+# # print(i1)
+# # print(i2)
+#
+# x = Polynomial(1,2,3,4,5,map_type=GF4)
+# # print(x ** 2)
+# # print(x ** 3)
+# # print(x ** 4)
+#
+# x = Polynomial(1,0,0,1,1,map_type=GF1)
+# y = Polynomial(1,1,1,1,1,map_type=GF1)
+# print(x * y)
+# print(reversed(x * y))
 
 

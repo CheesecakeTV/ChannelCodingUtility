@@ -97,9 +97,9 @@ class GF8(int, GFn):
 x = GF1(5)
 y = GF1(2)
 
-print(x)
+# print(x)
 
-print(x * y)
+# print(x * y)
 
 
 

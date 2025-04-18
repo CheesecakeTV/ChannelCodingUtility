@@ -146,6 +146,9 @@ class Polynomial:
         """More like __floordivmod__"""
         assert other, "Can't divide by an empty polynomial"
 
+        # Todo: Hier stimmt irgendwas gewaltig nicht
+        # Es funktioniert nur, wenn der Teiler existiert...
+
         if other.grade > self.grade:
             return Polynomial(),other
 

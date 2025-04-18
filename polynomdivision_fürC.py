@@ -1,15 +1,22 @@
+from functools import lru_cache
 
 
+@lru_cache()
+def bin_len(theBin) -> int:
+    counter = 0
+    while theBin:
+        counter += 1
+        theBin >>= 1
+    return counter
 
-dasPoly = 0b_1001_0110_00
+dasPoly = 0b1001011100111110
 durch = 0b111
 
-rem = 0
+unterschied = bin_len(dasPoly) - bin_len(durch)
+durch <<= unterschied
+first_bit = 1 << bin_len(dasPoly) - 1
 
-durch <<= 7
-first_bit = 1 << 9
-
-for i in range(8):
+for i in range(unterschied + 1):
     print(bin(dasPoly))
     print(bin(durch))
     print()
@@ -19,4 +26,6 @@ for i in range(8):
 
     first_bit >>= 1
     durch >>= 1
+
+print("Modulo:",bin(dasPoly))
 

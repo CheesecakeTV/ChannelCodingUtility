@@ -17,10 +17,14 @@ def bin_len(theBin) -> int:
 #     0
 # ]
 
-data = [r.randint(0,255) for _ in range(100)] + [0]
+#data = [r.randint(0,255) for _ in range(100)] + [0]
+
+data = "Hallo Welt"
+data = list(map(ord,data))
 
 gen = 0b10000111
 
+print(data)
 print("Data-stream:",bin(sum([
     i << 8 * n for n,i in enumerate(data[::-1])
 ])))
@@ -32,11 +36,6 @@ def poly_mod(dasPoly,durch):
     first_bit = 1 << 15
 
     for i in range(9):
-        # print(bin(dasPoly))
-        # print(bin(durch))
-        # print(bin(first_bit))
-        # print()
-
         if first_bit & dasPoly:
             dasPoly ^= durch
 
@@ -51,6 +50,6 @@ for i in data[1:]:
     nextNum &= (1 << 16) - 1
     mod = poly_mod(nextNum, gen)
 
-print("Modulo:",bin(mod))
+print("Modulo:",mod)
 
 
